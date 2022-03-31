@@ -1,0 +1,41 @@
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+*.swp
+
+app/pids
+app/logs
+app/results
+app/tmp
+
+# Build
+app/public/css/main.css
+
+# Coverage reports
+app/coverage
+
+# API keys and secrets
+app/.env
+
+# Dependency directory
+app/node_modules
+app/bower_components
+
+# Editors
+app/.idea
+app/*.iml
+
+# OS metadata
+app/.DS_Store
+app/Thumbs.db
+
+# Ignore built ts files
+app/dist/**/*
+
+# ignore yarn.lock
+app/yarn.lock

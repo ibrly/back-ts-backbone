@@ -39,3 +39,7 @@ app/dist/**/*
 
 # ignore yarn.lock
 app/yarn.lock
+# Root level
+.DS_Store
+.idea/
+env/*.env

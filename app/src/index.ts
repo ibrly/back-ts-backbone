@@ -16,6 +16,7 @@ dotenv.config();
  */
 
 if (!process.env.PORT) {
+    console.error("PORT is not set. Copy env/app.env.example to env/app.env or export PORT.");
     process.exit(1);
 }
 

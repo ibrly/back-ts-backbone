@@ -5,6 +5,7 @@
 import express, {Request, Response} from "express";
 import * as ItemService from "./items.service";
 import {BaseItem, Item} from "./item.interface";
+import {toBaseItem, validateItem} from "./item.validation";
 
 /**
  * Router Definition
@@ -51,7 +52,10 @@ itemsRouter.get("/:id", async (req: Request, res: Response) => {
 
 itemsRouter.post("/", async (req: Request, res: Response) => {
     try {
-        const item: BaseItem = req.body;
+        const errors = validateItem(req.body);
+        if (errors.length) return res.status(400).json({status: 400, errors});
+
+        const item: BaseItem = toBaseItem(req.body);
 
         const newItem = await ItemService.create(item);
 
@@ -66,7 +70,10 @@ itemsRouter.post("/", async (req: Request, res: Response) => {
 itemsRouter.put("/:id", async (req: Request, res: Response) => {
     const id: number = parseInt(req.params.id, 10);
     try {
-        const itemUpdate: Item = req.body;
+        const errors = validateItem(req.body);
+        if (errors.length) return res.status(400).json({status: 400, errors});
+
+        const itemUpdate: BaseItem = toBaseItem(req.body);
         const existingItem: Item = await ItemService.find(id);
 
         if (existingItem) {

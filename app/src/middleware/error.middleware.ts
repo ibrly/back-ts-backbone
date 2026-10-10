@@ -8,6 +8,9 @@ export const errorHandler = (
     next: NextFunction
 ) => {
     const status = error.statusCode || error.status || 500;
+    // Error properties are not enumerable, so sending the error object itself serialises to {}.
+    // Hide internal details for server errors.
+    const message = status >= 500 ? "Internal server error" : error.message;
 
-    response.status(status).send(error);
+    response.status(status).json({status, message});
 };

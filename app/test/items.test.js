@@ -62,3 +62,24 @@ test("unknown routes return 404", async () => {
     const res = await fetch(`http://127.0.0.1:${server.address().port}/nope`);
     assert.equal(res.status, 404);
 });
+
+test("invalid payloads are rejected with every problem listed", async () => {
+    const res = await fetch(base, json("POST", {name: "", price: "5", description: "x"}));
+    assert.equal(res.status, 400);
+    const body = await res.json();
+    assert.deepEqual(body.errors, [
+        "name must be a non-empty string",
+        "image must be a non-empty string",
+        "price must be a non-negative integer (cents)",
+    ]);
+
+    const put = await fetch(`${base}/1`, json("PUT", {name: "Burger", price: -1, description: "Tasty", image: "b.png"}));
+    assert.equal(put.status, 400);
+    assert.equal((await fetch(`${base}/1`).then(r => r.json())).price, 599);
+});
+
+test("unknown fields are dropped before the item is stored", async () => {
+    const res = await fetch(base, json("POST", {name: "Soup", price: 300, description: "Hot", image: "s.png", admin: true}));
+    assert.equal(res.status, 201);
+    assert.equal("admin" in (await res.json()), false);
+});

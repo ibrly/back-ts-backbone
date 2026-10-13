@@ -31,6 +31,8 @@ let items: Items = {
     }
 };
 
+let nextId = Math.max(0, ...Object.keys(items).map(Number)) + 1;
+
 /**
  * Service Methods
  */
@@ -40,7 +42,7 @@ export const findAll = async (): Promise<Item[]> => Object.values(items);
 export const find = async (id: number): Promise<Item> => items[id];
 
 export const create = async (newItem: BaseItem): Promise<Item> => {
-    const id = new Date().valueOf();
+    const id = nextId++;
 
     items[id] = {
         id,

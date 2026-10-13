@@ -83,3 +83,14 @@ test("unknown fields are dropped before the item is stored", async () => {
     assert.equal(res.status, 201);
     assert.equal("admin" in (await res.json()), false);
 });
+
+test("items created in the same moment get distinct, sequential ids", async () => {
+    const [a, b] = await Promise.all([
+        fetch(base, json("POST", {name: "Fries", price: 250, description: "Crispy", image: "f.png"})).then(r => r.json()),
+        fetch(base, json("POST", {name: "Cola", price: 150, description: "Cold", image: "c.png"})).then(r => r.json()),
+    ]);
+    assert.notEqual(a.id, b.id);
+    assert.equal(Math.abs(a.id - b.id), 1);
+    assert.equal((await fetch(`${base}/${a.id}`).then(r => r.json())).name, "Fries");
+    assert.equal((await fetch(`${base}/${b.id}`).then(r => r.json())).name, "Cola");
+});

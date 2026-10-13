@@ -19,6 +19,15 @@ npm run build && PORT=1000 npm start
 npm run typecheck
 ```
 
+## Tests
+
+```bash
+cd app
+npm test
+```
+
+`npm test` compiles to `dist/` and runs `test/items.test.js` with the built-in `node:test` runner. The tests start the app on a random port and call the API with `fetch`, so they need Node 18 or newer and no database. CI runs the same command on every push to `master` and on pull requests.
+
 ## API
 
 Base path: `/api/menu/items`

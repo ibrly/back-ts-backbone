@@ -94,3 +94,13 @@ test("items created in the same moment get distinct, sequential ids", async () =
     assert.equal((await fetch(`${base}/${a.id}`).then(r => r.json())).name, "Fries");
     assert.equal((await fetch(`${base}/${b.id}`).then(r => r.json())).name, "Cola");
 });
+
+test("PUT on an unknown id creates the item under that id", async () => {
+    const put = await fetch(`${base}/50`, json("PUT", {name: "Wrap", price: 400, description: "Rolled", image: "w.png"}));
+    assert.equal(put.status, 201);
+    assert.equal((await put.json()).id, 50);
+    assert.equal((await fetch(`${base}/50`).then(r => r.json())).name, "Wrap");
+
+    const next = await fetch(base, json("POST", {name: "Juice", price: 200, description: "Fresh", image: "j.png"}));
+    assert.equal((await next.json()).id, 51);
+});

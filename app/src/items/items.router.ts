@@ -81,7 +81,7 @@ itemsRouter.put("/:id", async (req: Request, res: Response) => {
             return res.status(200).json(updatedItem);
         }
 
-        const newItem = await ItemService.create(itemUpdate);
+        const newItem = await ItemService.create(itemUpdate, id);
 
         res.status(201).json(newItem);
     } catch (e) {

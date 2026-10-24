@@ -41,8 +41,10 @@ export const findAll = async (): Promise<Item[]> => Object.values(items);
 
 export const find = async (id: number): Promise<Item> => items[id];
 
-export const create = async (newItem: BaseItem): Promise<Item> => {
-    const id = nextId++;
+export const create = async (newItem: BaseItem, requestedId?: number): Promise<Item> => {
+    const id = requestedId ?? nextId++;
+    // An item stored under a caller's id must not be handed out again by a later POST.
+    nextId = Math.max(nextId, id + 1);
 
     items[id] = {
         id,

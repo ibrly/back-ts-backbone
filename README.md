@@ -37,8 +37,10 @@ Base path: `/api/menu/items`
 | `GET` | `/` | List items |
 | `GET` | `/:id` | Get an item |
 | `POST` | `/` | Create an item (`name`, `price`, `description`, `image`) |
-| `PUT` | `/:id` | Update an item, or create it if it does not exist |
+| `PUT` | `/:id` | Update an item, or create it under that id if it does not exist |
 | `DELETE` | `/:id` | Delete an item |
+
+`:id` must be a positive integer, anything else gets a `400` with `{"status": 400, "message": "id must be a positive integer"}`.
 
 ## Structure
 

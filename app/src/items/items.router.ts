@@ -2,7 +2,7 @@
  * Required External Modules and Interfaces
  */
 
-import express, {Request, Response} from "express";
+import express, {NextFunction, Request, Response} from "express";
 import * as ItemService from "./items.service";
 import {BaseItem, Item} from "./item.interface";
 import {toBaseItem, validateItem} from "./item.validation";
@@ -12,6 +12,14 @@ import {toBaseItem, validateItem} from "./item.validation";
  */
 
 export const itemsRouter = express.Router();
+
+// parseInt("abc") is NaN, which reads as "not found" or, for PUT, a brand new item.
+itemsRouter.param("id", (req: Request, res: Response, next: NextFunction, id: string) => {
+    if (!/^[1-9]\d*$/.test(id)) {
+        return res.status(400).json({status: 400, message: "id must be a positive integer"});
+    }
+    next();
+});
 
 
 /**

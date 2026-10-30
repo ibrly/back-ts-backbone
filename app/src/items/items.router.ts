@@ -51,7 +51,7 @@ itemsRouter.get("/:id", async (req: Request, res: Response) => {
             return res.status(200).send(item);
         }
 
-        res.status(404).send("item not found");
+        res.status(404).json({status: 404, message: "item not found"});
     } catch (e) {
         res.status(500).send(e instanceof Error ? e.message : String(e));
     }

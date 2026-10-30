@@ -117,3 +117,14 @@ test("ids that are not positive integers get a 400", async () => {
         }
     }
 });
+
+test("a failing route answers through errorHandler without leaking the error", async (t) => {
+    const service = require("../dist/items/items.service");
+    t.mock.method(service, "findAll", async () => {
+        throw new Error("db password is hunter2");
+    });
+
+    const res = await fetch(base);
+    assert.equal(res.status, 500);
+    assert.deepEqual(await res.json(), {status: 500, message: "Internal server error"});
+});

@@ -123,8 +123,10 @@ test("a failing route answers through errorHandler without leaking the error", a
     t.mock.method(service, "findAll", async () => {
         throw new Error("db password is hunter2");
     });
+    const logged = t.mock.method(console, "error", () => {});
 
     const res = await fetch(base);
     assert.equal(res.status, 500);
     assert.deepEqual(await res.json(), {status: 500, message: "Internal server error"});
+    assert.equal(logged.mock.calls[0].arguments[0].message, "db password is hunter2");
 });

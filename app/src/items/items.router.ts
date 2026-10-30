@@ -15,7 +15,8 @@ export const itemsRouter = express.Router();
 
 // parseInt("abc") is NaN, which reads as "not found" or, for PUT, a brand new item.
 itemsRouter.param("id", (req: Request, res: Response, next: NextFunction, id: string) => {
-    if (!/^[1-9]\d*$/.test(id)) {
+    // Past 2^53 parseInt rounds, so "9007199254740993" would read item 9007199254740992.
+    if (!/^[1-9]\d*$/.test(id) || !Number.isSafeInteger(Number(id))) {
         return res.status(400).json({status: 400, message: "id must be a positive integer"});
     }
     next();

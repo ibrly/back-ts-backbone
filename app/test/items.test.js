@@ -107,7 +107,7 @@ test("PUT on an unknown id creates the item under that id", async () => {
 
 test("ids that are not positive integers get a 400", async () => {
     const item = {name: "Soup", price: 300, description: "Hot", image: "s.png"};
-    for (const id of ["abc", "0", "1.5", "-2"]) {
+    for (const id of ["abc", "0", "1.5", "-2", "9007199254740993"]) {
         for (const init of [undefined, json("PUT", item), {method: "DELETE"}]) {
             const res = await fetch(`${base}/${id}`, init);
             assert.equal(res.status, 400, `${init?.method ?? "GET"} /${id}`);

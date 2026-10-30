@@ -29,19 +29,20 @@ itemsRouter.param("id", (req: Request, res: Response, next: NextFunction, id: st
 
 // GET items
 
-itemsRouter.get("/", async (req: Request, res: Response) => {
+itemsRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
     try {
         const items: Item[] = await ItemService.findAll();
 
         res.status(200).send(items);
     } catch (e) {
-        res.status(500).send(e instanceof Error ? e.message : String(e));
+        // Express 4 does not catch async errors; errorHandler hides the details of a 500.
+        next(e);
     }
 });
 
 // GET items/:id
 
-itemsRouter.get("/:id", async (req: Request, res: Response) => {
+itemsRouter.get("/:id", async (req: Request, res: Response, next: NextFunction) => {
     const id: number = parseInt(req.params.id, 10);
 
     try {
@@ -51,15 +52,15 @@ itemsRouter.get("/:id", async (req: Request, res: Response) => {
             return res.status(200).send(item);
         }
 
-        res.status(404).send("item not found");
+        res.status(404).json({status: 404, message: "item not found"});
     } catch (e) {
-        res.status(500).send(e instanceof Error ? e.message : String(e));
+        next(e);
     }
 });
 
 // POST items
 
-itemsRouter.post("/", async (req: Request, res: Response) => {
+itemsRouter.post("/", async (req: Request, res: Response, next: NextFunction) => {
     try {
         const errors = validateItem(req.body);
         if (errors.length) return res.status(400).json({status: 400, errors});
@@ -70,13 +71,13 @@ itemsRouter.post("/", async (req: Request, res: Response) => {
 
         res.status(201).json(newItem);
     } catch (e) {
-        res.status(500).send(e instanceof Error ? e.message : String(e));
+        next(e);
     }
 });
 
 // PUT items/:id
 
-itemsRouter.put("/:id", async (req: Request, res: Response) => {
+itemsRouter.put("/:id", async (req: Request, res: Response, next: NextFunction) => {
     const id: number = parseInt(req.params.id, 10);
     try {
         const errors = validateItem(req.body);
@@ -94,19 +95,19 @@ itemsRouter.put("/:id", async (req: Request, res: Response) => {
 
         res.status(201).json(newItem);
     } catch (e) {
-        res.status(500).send(e instanceof Error ? e.message : String(e));
+        next(e);
     }
 });
 
 // DELETE items/:id
 
-itemsRouter.delete("/:id", async (req: Request, res: Response) => {
+itemsRouter.delete("/:id", async (req: Request, res: Response, next: NextFunction) => {
     try {
         const id: number = parseInt(req.params.id, 10);
         await ItemService.remove(id);
 
         res.sendStatus(204);
     } catch (e) {
-        res.status(500).send(e instanceof Error ? e.message : String(e));
+        next(e);
     }
 });

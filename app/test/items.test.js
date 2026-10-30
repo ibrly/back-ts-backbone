@@ -34,6 +34,7 @@ test("GET /:id returns one item and 404s for unknown ids", async () => {
 
     const missing = await fetch(`${base}/999`);
     assert.equal(missing.status, 404);
+    assert.deepEqual(await missing.json(), {status: 404, message: "item not found"});
 });
 
 test("POST, PUT and DELETE manage an item's lifecycle", async () => {
@@ -61,6 +62,7 @@ test("malformed JSON gets a 400 with a readable message", async () => {
 test("unknown routes return 404", async () => {
     const res = await fetch(`http://127.0.0.1:${server.address().port}/nope`);
     assert.equal(res.status, 404);
+    assert.deepEqual(await res.json(), {status: 404, message: "Resource not found"});
 });
 
 test("invalid payloads are rejected with every problem listed", async () => {
@@ -114,4 +116,17 @@ test("ids that are not positive integers get a 400", async () => {
             assert.deepEqual(await res.json(), {status: 400, message: "id must be a positive integer"});
         }
     }
+});
+
+test("a failing route answers through errorHandler without leaking the error", async (t) => {
+    const service = require("../dist/items/items.service");
+    t.mock.method(service, "findAll", async () => {
+        throw new Error("db password is hunter2");
+    });
+    const logged = t.mock.method(console, "error", () => {});
+
+    const res = await fetch(base);
+    assert.equal(res.status, 500);
+    assert.deepEqual(await res.json(), {status: 500, message: "Internal server error"});
+    assert.equal(logged.mock.calls[0].arguments[0].message, "db password is hunter2");
 });
